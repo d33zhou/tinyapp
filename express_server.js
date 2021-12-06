@@ -47,3 +47,13 @@ app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
 });
 
+function generateRandomString(letters = 6) {
+  const charPool = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890";
+  let randomized = '';
+
+  for (let i = 0; i < letters; i++) {
+    randomized += charPool.charAt(Math.floor(Math.random() * charPool.length));
+  }
+
+  return randomized;
+};

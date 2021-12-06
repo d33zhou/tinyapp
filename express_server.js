@@ -12,6 +12,8 @@ const urlDatabase = {
   "9sm5xK": "http://www.google.com"
 };
 
+// GET METHODS --------------------------------------
+
 app.get("/", (req, res) => {
   res.send("Hello!");
 });
@@ -38,13 +40,20 @@ app.get("/urls/:shortURL", (req, res) => {
   res.render("urls_show", templateVars);
 });
 
+// POST METHODS --------------------------------------
+
 app.post("/urls", (req, res) => {
   const generatedString = generateRandomString();
 
   urlDatabase[generatedString] = req.body.longURL;
-  res.send(`URL: ${req.body.longURL}\n
-  Random string: ${generatedString}`);
+  // res.send(`URL: ${req.body.longURL}\n
+  // Random string: ${generatedString}`);
+  // console.log(urlDatabase);
+
+  res.redirect(`/urls/${generatedString}`);
 });
+
+// SERVER --------------------------------------
 
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);

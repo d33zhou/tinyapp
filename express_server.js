@@ -47,6 +47,11 @@ app.get("/u/:shortURL", (req, res) => {
 
 // POST METHODS --------------------------------------
 
+app.post("/login", (req, res) => {
+  res.cookie(req.username, req.body.username);
+  res.redirect("/urls");
+});
+
 app.post("/urls/:shortURL/delete", (req, res) => {
   delete urlDatabase[req.params.shortURL];
   res.redirect("/urls");

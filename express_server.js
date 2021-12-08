@@ -18,6 +18,19 @@ const urlDatabase = {
   "9sm5xK": "http://www.google.com"
 };
 
+const users = {
+  aabb112: {
+    id: "aabb112",
+    email: "user@example.com",
+    password: "test1"
+  },
+  aabb113: {
+    id: "aabb113",
+    email: "test@example.com",
+    password: "test2"
+  },
+};
+
 // GET METHODS --------------------------------------
 
 app.get("/", (req, res) => {

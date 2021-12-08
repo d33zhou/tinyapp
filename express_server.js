@@ -91,6 +91,11 @@ app.get("/urls/:shortURL", (req, res) => {
 });
 
 app.get("/u/:shortURL", (req, res) => {
+  if (!Object.keys(urlDatabase).includes(req.params.shortURL)) {
+    res.status(404).send("Error - page not found.");
+    return;
+  }
+  
   const longURL = urlDatabase[req.params.shortURL].longURL;
   res.redirect(longURL);
 });

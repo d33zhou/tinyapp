@@ -33,40 +33,43 @@ const users = {
 
 // GET METHODS --------------------------------------
 
-app.get("/", (req, res) => {
+app.get("/", (req, res) => { //dev only, to delete
   res.send("Hello!");
 });
 
-app.get("/urls.json", (req, res) => {
+app.get("/urls.json", (req, res) => { //dev only, to delete
   res.json(urlDatabase);
 });
 
-app.get("/users.json", (req, res) => {
+app.get("/users.json", (req, res) => { //dev only, to delete
   res.json(users);
 });
 
-app.get("/hello", (req, res) => {
+app.get("/hello", (req, res) => { //dev only, to delete
   res.send("<html><body>Hello <b>World</b></body></html>\n");
 });
 
+// -----------------------------------------------
+
 app.get("/urls", (req, res) => {
   const templateVars = {
-    username: req.cookies["username"],
+    user: getUser(req.cookies.user_id),
     urls: urlDatabase
   };
+
   res.render("urls_index", templateVars);
 });
 
 app.get("/urls/new", (req, res) => {
   const templateVars = {
-    username: req.cookies.username,
+    user: getUser(req.cookies.user_id),
   };
   res.render("urls_new", templateVars);
 });
 
 app.get("/urls/:shortURL", (req, res) => {
   const templateVars = {
-    username: req.cookies.username,
+    user: getUser(req.cookies.user_id),
     shortURL: req.params.shortURL,
     longURL: urlDatabase[req.params.shortURL]
   };
@@ -80,7 +83,7 @@ app.get("/u/:shortURL", (req, res) => {
 
 app.get("/register", (req, res) => {
   const templateVars = {
-    username: req.cookies.username,
+    user: getUser(req.cookies.user_id),
   };
 
   res.render("user_register", templateVars);
@@ -89,12 +92,12 @@ app.get("/register", (req, res) => {
 // POST METHODS -------------------------------------
 
 app.post("/login", (req, res) => {
-  res.cookie("username", req.body.username);
+  res.cookie("user_id", req.body.username);
   res.redirect("/urls");
 });
 
 app.post("/logout", (req, res) => {
-  res.clearCookie("username");
+  res.clearCookie("user_id");
   res.redirect("/urls");
 });
 
@@ -107,8 +110,8 @@ app.post("/register", (req, res) => {
     password: req.body.password
   };
 
-  res.clearCookie("username");
-  res.cookie("username", users[generatedString].email);
+  res.clearCookie("user_id");
+  res.cookie("user_id", generatedString);
 
   res.redirect("/urls");
 });
@@ -138,7 +141,7 @@ app.listen(PORT, () => {
 
 // FUNCTIONS ----------------------------------------
 
-function generateRandomString(letters = 6) {
+const generateRandomString = (letters = 6) => {
   const charPool = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890";
   let randomized = '';
 
@@ -147,4 +150,14 @@ function generateRandomString(letters = 6) {
   }
 
   return randomized;
+};
+
+const getUser = id => {
+  for (const user in users) {
+    if (user === id) {
+      return users[user];
+    }
+  }
+
+  return false;
 };

@@ -53,7 +53,7 @@ app.get("/users.json", (req, res) => { //dev only, to delete
 
 app.get("/urls", (req, res) => {
   const templateVars = {
-    user: getUser(req.cookies.user_id), //user_id is the email
+    user: users[req.cookies.user_id],
     urls: urlDatabase
   };
 
@@ -62,7 +62,7 @@ app.get("/urls", (req, res) => {
 
 app.get("/urls/new", (req, res) => {
   const templateVars = {
-    user: getUser(req.cookies.user_id),
+    user: users[req.cookies.user_id],
   };
 
   res.render("urls_new", templateVars);
@@ -70,7 +70,7 @@ app.get("/urls/new", (req, res) => {
 
 app.get("/urls/:shortURL", (req, res) => {
   const templateVars = {
-    user: getUser(req.cookies.user_id),
+    user: users[req.cookies.user_id],
     shortURL: req.params.shortURL,
     longURL: urlDatabase[req.params.shortURL]
   };
@@ -85,7 +85,7 @@ app.get("/u/:shortURL", (req, res) => {
 
 app.get("/register", (req, res) => {
   const templateVars = {
-    user: getUser(req.cookies.user_id),
+    user: users[req.cookies.user_id],
   };
 
   res.render("user_register", templateVars);
@@ -93,7 +93,7 @@ app.get("/register", (req, res) => {
 
 app.get("/login", (req, res) => {
   const templateVars = {
-    user: getUser(req.cookies.user_id),
+    user: users[req.cookies.user_id],
   };
 
   res.render("user_login", templateVars);
@@ -102,7 +102,14 @@ app.get("/login", (req, res) => {
 // POST METHODS -------------------------------------
 
 app.post("/login", (req, res) => {
-  res.cookie("user_id", req.body.username);
+  const loginAttempt = getUser(req.body.email);
+  
+  if (!loginAttempt || loginAttempt.password !== req.body.password) {
+    res.status(403).send("Error - invalid email or password.");
+    return;
+  }  
+  
+  res.cookie("user_id", loginAttempt.id);
   res.redirect("/urls");
 });
 
@@ -131,7 +138,7 @@ app.post("/register", (req, res) => {
   };
 
   res.clearCookie("user_id");
-  res.cookie("user_id", users[generatedString].email);
+  res.cookie("user_id", generatedString);
 
   res.redirect("/urls");
 });

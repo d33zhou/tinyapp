@@ -24,6 +24,8 @@ const urlDatabase = {
   },
 };
 
+//curl -X POST -i localhost:8080/urls/9sm5xK/delete
+
 const users = {
   aaBB12: {
     id: "aaBB12",
@@ -88,7 +90,7 @@ app.get("/urls/:shortURL", (req, res) => {
   const filteredURLs = Object.keys(urlsForUser(userID));
 
   if (!filteredURLs.includes(shortURL)) {
-    res.status(400).send("Error - no access to this page.");
+    res.status(400).send("Error - login to access this page.");
     return;
   }
   
@@ -184,11 +186,21 @@ app.post("/register", (req, res) => {
 });
 
 app.post("/urls/:shortURL/delete", (req, res) => {
+  if (req.cookies.user_id !== urlDatabase[req.params.shortURL].userID) {
+    res.status(400).send("Error - you do not have access to delete this link.");
+    return;
+  }
+  
   delete urlDatabase[req.params.shortURL];
   res.redirect("/urls");
 });
 
 app.post("/urls/:shortURL", (req, res) => {
+  if (req.cookies.user_id !== urlDatabase[req.params.shortURL].userID) {
+    res.status(400).send("Error - you do not have access to modify this link.");
+    return;
+  }
+  
   urlDatabase[req.params.shortURL].longURL = req.body.newLongURL;
   res.redirect(`/urls/${req.params.shortURL}`);
 });

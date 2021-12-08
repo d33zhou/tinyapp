@@ -19,13 +19,13 @@ const urlDatabase = {
 };
 
 const users = {
-  aabb112: {
-    id: "aabb112",
+  aaBB12: {
+    id: "aaBB12",
     email: "user@example.com",
     password: "test1"
   },
-  aabb113: {
-    id: "aabb113",
+  CCdd34: {
+    id: "CCdd34",
     email: "test@example.com",
     password: "test2"
   },
@@ -39,6 +39,10 @@ app.get("/", (req, res) => {
 
 app.get("/urls.json", (req, res) => {
   res.json(urlDatabase);
+});
+
+app.get("/users.json", (req, res) => {
+  res.json(users);
 });
 
 app.get("/hello", (req, res) => {
@@ -91,6 +95,21 @@ app.post("/login", (req, res) => {
 
 app.post("/logout", (req, res) => {
   res.clearCookie("username");
+  res.redirect("/urls");
+});
+
+app.post("/register", (req, res) => {
+  const generatedString = generateRandomString();
+
+  users[generatedString] = {
+    id: generatedString,
+    email: req.body.email,
+    password: req.body.password
+  };
+
+  res.clearCookie("username");
+  res.cookie("username", users[generatedString].email);
+
   res.redirect("/urls");
 });
 

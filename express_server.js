@@ -33,9 +33,9 @@ const users = {
 
 // GET METHODS --------------------------------------
 
-app.get("/", (req, res) => { //dev only, to delete
+/* app.get("/", (req, res) => { //dev only, to delete
   res.send("Hello!");
-});
+}); */
 
 app.get("/urls.json", (req, res) => { //dev only, to delete
   res.json(urlDatabase);
@@ -45,15 +45,15 @@ app.get("/users.json", (req, res) => { //dev only, to delete
   res.json(users);
 });
 
-app.get("/hello", (req, res) => { //dev only, to delete
+/* app.get("/hello", (req, res) => { //dev only, to delete
   res.send("<html><body>Hello <b>World</b></body></html>\n");
-});
+}); */
 
 // -----------------------------------------------
 
 app.get("/urls", (req, res) => {
   const templateVars = {
-    user: getUser(req.cookies.user_id),
+    user: getUser(req.cookies.user_id), //user_id is the email
     urls: urlDatabase
   };
 
@@ -64,6 +64,7 @@ app.get("/urls/new", (req, res) => {
   const templateVars = {
     user: getUser(req.cookies.user_id),
   };
+
   res.render("urls_new", templateVars);
 });
 
@@ -73,6 +74,7 @@ app.get("/urls/:shortURL", (req, res) => {
     shortURL: req.params.shortURL,
     longURL: urlDatabase[req.params.shortURL]
   };
+
   res.render("urls_show", templateVars);
 });
 
@@ -102,6 +104,16 @@ app.post("/logout", (req, res) => {
 });
 
 app.post("/register", (req, res) => {
+  if (!req.body.email || !req.body.password) {
+    res.status(400).send("Error - invalid inputs.");
+    return;
+  }
+  
+  if (getUser(req.body.email)) {
+    res.status(400).send("Error - user already exists.");
+    return;
+  }
+
   const generatedString = generateRandomString();
 
   users[generatedString] = {
@@ -111,7 +123,7 @@ app.post("/register", (req, res) => {
   };
 
   res.clearCookie("user_id");
-  res.cookie("user_id", generatedString);
+  res.cookie("user_id", users[generatedString].email);
 
   res.redirect("/urls");
 });
@@ -152,9 +164,9 @@ const generateRandomString = (letters = 6) => {
   return randomized;
 };
 
-const getUser = id => {
+const getUser = email => {
   for (const user in users) {
-    if (user === id) {
+    if (users[user].email === email) {
       return users[user];
     }
   }

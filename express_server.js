@@ -172,6 +172,12 @@ app.post("/urls/:shortURL", (req, res) => {
 });
 
 app.post("/urls", (req, res) => {
+  // if not logged in, output error
+  if (!users[req.cookies.user_id]) {
+    res.status(400).send("Error - user not logged in.");
+    return;
+  }
+  
   const generatedString = generateRandomString();
 
   urlDatabase[generatedString] = req.body.longURL;

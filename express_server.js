@@ -91,6 +91,14 @@ app.get("/register", (req, res) => {
   res.render("user_register", templateVars);
 });
 
+app.get("/login", (req, res) => {
+  const templateVars = {
+    user: getUser(req.cookies.user_id),
+  };
+
+  res.render("user_login", templateVars);
+});
+
 // POST METHODS -------------------------------------
 
 app.post("/login", (req, res) => {

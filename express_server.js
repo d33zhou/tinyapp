@@ -83,10 +83,19 @@ app.get("/urls/new", (req, res) => {
 });
 
 app.get("/urls/:shortURL", (req, res) => {
+  const userID = req.cookies.user_id;
+  const shortURL = req.params.shortURL;
+  const filteredURLs = Object.keys(urlsForUser(userID));
+
+  if (!filteredURLs.includes(shortURL)) {
+    res.status(400).send("Error - no access to this page.");
+    return;
+  }
+  
   const templateVars = {
-    user: users[req.cookies.user_id],
-    shortURL: req.params.shortURL,
-    longURL: urlDatabase[req.params.shortURL].longURL
+    user: users[userID],
+    shortURL,
+    longURL: urlDatabase[shortURL].longURL
   };
 
   res.render("urls_show", templateVars);

@@ -61,6 +61,12 @@ app.get("/urls", (req, res) => {
 });
 
 app.get("/urls/new", (req, res) => {
+  // if not logged in, redirect to /login
+  if (!users[req.cookies.user_id]) {
+    res.redirect("/login");
+    return;
+  }
+  
   const templateVars = {
     user: users[req.cookies.user_id],
   };
@@ -84,7 +90,7 @@ app.get("/u/:shortURL", (req, res) => {
 });
 
 app.get("/register", (req, res) => {
-  // if logged in, redirect to /urls/
+  // if logged in, redirect to /urls
   if (users[req.cookies.user_id]) {
     res.redirect("/urls");
     return;
@@ -98,7 +104,7 @@ app.get("/register", (req, res) => {
 });
 
 app.get("/login", (req, res) => {
-  // if logged in, redirect to /urls/
+  // if logged in, redirect to /urls
   if (users[req.cookies.user_id]) {
     res.redirect("/urls");
     return;

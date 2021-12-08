@@ -1,47 +1,50 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-    <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-    <title>New Registration - TinyApp</title>
-  </head>
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css"
+    integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
 
-  <body>
-    <%- include('partials/_header') %>
+  <title>Create Account - TinyApp</title>
+</head>
+
+<body>
+  <%- include('partials/_header') %>
     <div class="card text-left">
-        <div class="card-header"></div>
-        <div class="card-body">
-          <h3 class="card-title">New User Registration</h3>
-          <form method="POST" action="/register">
-            <div class="form-group row">
-              <label for="registerEmail" class="col-sm-1 col-form-label">Email:</label>
-              <div class="col-sm-1">
-                <input type="email" id="registerEmail" name="email" placeholder="email@example.com">
-              </div>
-            </div>
-            <div class="form-group row">
-              <label for="registerPassword" class="col-sm-1 col-form-label">Password:</label>
-              <div class="col-sm-1">
-                <input type="password" id="registerPassword" name="password" placeholder="password">
-              </div>
-            </div>
-            <div class="form-group row">
-              <label class="col-sm-1 col-form-label"></label>
-              <div class="col-sm-1">
-                <button type="submit" class="btn btn-primary">Register</button>
-              </div>
-            </div>
-          </form>
+      <div class="card-header"></div>
+      <div class="card-body">
+        <div class="form-group">
+          <h3 class="card-title">Create Account</h3>
         </div>
+        <form method="POST" action="/register">
+          <div class="form-group">
+            <label for="registerEmail">Email:</label>
+            <input class="form-control" type="email" id="registerEmail" name="email" placeholder="email@example.com">
+          </div>
+          <div class="form-group">
+            <label for="registerPassword">Password:</label>
+            <input class="form-control" type="password" id="registerPassword" name="password" placeholder="password">
+          </div>
+          <button type="submit" class="btn btn-primary">Register</button>
+        </form>
+      </div>
+    </div>
     </div>
 
     <!-- Bootstrap JS -->
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
-  </body>
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+      integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+      crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+      integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+      crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+      integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+      crossorigin="anonymous"></script>
+</body>
+
 </html>

@@ -12,15 +12,18 @@
       </div>
       <div class="navbar-nav ml-auto">
         <% if (!user) { %>
-          <form class="form-inline" method="POST" action="/login">
-            <input class="form-control mr-sm-2" type="text" id="userID" name="username">
+          <form class="form-inline" method="GET" action="/register">
+            <button type="submit" class="btn btn-outline-dark my-2 my-sm-0">Register</button>
+          </form>
+          <span class="navbar-text pr-md-1"></span>
+          <form class="form-inline" method="GET" action="/login">
             <button type="submit" class="btn btn-outline-dark my-2 my-sm-0">Login</button>
           </form>
         <% } else { %>
-            <span class="navbar-text pr-md-3">Logged In As: <%=user.email%></span>
-            <form class="form-inline" method="POST" action="/logout">
-              <button type="submit" class="btn btn-outline-dark my-2 my-sm-0">Logout</button>
-            </form>
+          <span class="navbar-text pr-md-3">Logged In As: <%=user.email%></span>
+          <form class="form-inline" method="POST" action="/logout">
+            <button type="submit" class="btn btn-outline-dark my-2 my-sm-0">Logout</button>
+          </form>
         <% } %>
       </div>
     </div>

@@ -21,24 +21,30 @@
           <th scope="col"></th>
         </tr>
       </thead>
-      <tbody>
-        <% for(let url in urls) { %>
-          <tr>
-            <td><%= url %></td>
-            <td><%= urls[url].longURL %></td>
-            <td>
-              <form method="GET" action=<%=`/urls/${url}`%>>
-                <button type="submit" class="btn btn-outline-primary">Edit</button>
-              </form>
-            </td>
-            <td>
-              <form method="POST" action=<%=`/urls/${url}/delete`%>>
-                <button type="submit" class="btn btn-outline-danger">Delete</button>
-              </form>
-            </td>
-          </tr>
-        <% } %>
-      </tbody>
+      <% if (!user) { %>
+        <div class="alert alert-danger" role="alert">
+          <a href="/register">Register</a> or <a href="/login">Login</a> to view your TinyURLs.
+        </div>
+        <% } else { %>
+          <tbody>
+          <% for(let url in urls) { %>
+            <tr>
+              <td><%= url %></td>
+              <td><%= urls[url].longURL %></td>
+              <td>
+                <form method="GET" action=<%=`/urls/${url}`%>>
+                  <button type="submit" class="btn btn-outline-primary">Edit</button>
+                </form>
+              </td>
+              <td>
+                <form method="POST" action=<%=`/urls/${url}/delete`%>>
+                  <button type="submit" class="btn btn-outline-danger">Delete</button>
+                </form>
+              </td>
+            </tr>
+            <% } %>
+          </tbody>
+          <% } %>
     </table>
   </main>
   <!-- Bootstrap JS -->

@@ -57,10 +57,12 @@ app.get("/users.json", (req, res) => { //dev only, to delete
 
 // -----------------------------------------------
 
-app.get("/urls", (req, res) => {
+app.get("/urls", (req, res) => {  
+  const userID = req.cookies.user_id;
+
   const templateVars = {
-    user: users[req.cookies.user_id],
-    urls: urlDatabase
+    user: users[userID],
+    urls: urlsForUser(userID)
   };
 
   res.render("urls_index", templateVars);
@@ -225,4 +227,15 @@ const getUser = email => {
   }
 
   return false;
+};
+
+const urlsForUser = id => {
+  const filtered = {};
+  let keys = Object.keys(urlDatabase).filter(url => urlDatabase[url].userID === id);
+
+  for (const key of keys) {
+    filtered[key] = urlDatabase[key];
+  }
+
+  return filtered;
 };

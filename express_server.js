@@ -89,9 +89,21 @@ app.get("/urls/:shortURL", (req, res) => {
   const shortURL = req.params.shortURL;
   const filteredURLs = Object.keys(urlsForUser(userID));
 
-  if (!filteredURLs.includes(shortURL)) {
-    res.status(400).send("Error - login to access this page.");
-    return;
+  if (!Object.keys(urlDatabase).includes(shortURL)) {
+    const templateError = {
+      user: undefined,
+      message: "ERROR: Page Not Found"
+    };
+
+    return res.status(404).render("error", templateError);
+
+  } else if (!filteredURLs.includes(shortURL)) {
+    const templateError = {
+      user: undefined,
+      message: "ERROR: Access Denied"
+    };
+
+    return res.status(400).render("error", templateError);
   }
   
   const templateVars = {
@@ -105,7 +117,7 @@ app.get("/urls/:shortURL", (req, res) => {
 
 app.get("/u/:shortURL", (req, res) => {
   if (!Object.keys(urlDatabase).includes(req.params.shortURL)) {
-    res.status(404).send("Error - page not found.");
+    res.redirect("/*");
     return;
   }
   
@@ -142,12 +154,12 @@ app.get("/login", (req, res) => {
 });
 
 app.get("/*", (req, res) => {
-  const templateVars = {
+  const templateError = {
     user: users[req.cookies.user_id],
-    message: "ERROR: 404 - Page Not Found"
+    message: "ERROR: Page Not Found"
   };
-  
-  res.render("error", templateVars);
+
+  res.status(404).render("error", templateError);
 });
 
 // POST METHODS -------------------------------------
@@ -156,8 +168,12 @@ app.post("/login", (req, res) => {
   const loginAttempt = getUser(req.body.email);
   
   if (!loginAttempt || loginAttempt.password !== req.body.password) {
-    res.status(403).send("Error - invalid email or password.");
-    return;
+    const templateError = {
+      user: undefined,
+      message: "ERROR: Invalid Email or Password"
+    };
+
+    return res.status(403).render("error", templateError);
   }  
   
   res.cookie("user_id", loginAttempt.id);
@@ -171,13 +187,21 @@ app.post("/logout", (req, res) => {
 
 app.post("/register", (req, res) => {
   if (!req.body.email || !req.body.password) {
-    res.status(400).send("Error - invalid inputs.");
-    return;
+    const templateError = {
+      user: undefined,
+      message: "ERROR: Invalid Email or Password"
+    };
+
+    return res.status(400).render("error", templateError);
   }
   
   if (getUser(req.body.email)) {
-    res.status(400).send("Error - user already exists.");
-    return;
+    const templateError = {
+      user: undefined,
+      message: "ERROR: Email Already Exists"
+    };
+
+    return res.status(400).render("error", templateError);
   }
 
   const generatedString = generateRandomString();
@@ -196,8 +220,12 @@ app.post("/register", (req, res) => {
 
 app.post("/urls/:shortURL/delete", (req, res) => {
   if (req.cookies.user_id !== urlDatabase[req.params.shortURL].userID) {
-    res.status(400).send("Error - you do not have access to delete this link.");
-    return;
+    const templateError = {
+      user: undefined,
+      message: "ERROR: Access Denied"
+    };
+
+    return res.status(403).render("error", templateError);
   }
   
   delete urlDatabase[req.params.shortURL];
@@ -206,8 +234,12 @@ app.post("/urls/:shortURL/delete", (req, res) => {
 
 app.post("/urls/:shortURL", (req, res) => {
   if (req.cookies.user_id !== urlDatabase[req.params.shortURL].userID) {
-    res.status(400).send("Error - you do not have access to modify this link.");
-    return;
+    const templateError = {
+      user: undefined,
+      message: "ERROR: Access Denied"
+    };
+
+    return res.status(403).render("error", templateError);
   }
   
   urlDatabase[req.params.shortURL].longURL = req.body.newLongURL;
@@ -217,8 +249,12 @@ app.post("/urls/:shortURL", (req, res) => {
 app.post("/urls", (req, res) => {
   // if not logged in, output error
   if (!users[req.cookies.user_id]) {
-    res.status(400).send("Error - user not logged in.");
-    return;
+    const templateError = {
+      user: undefined,
+      message: "ERROR: User Not Logged In"
+    };
+
+    return res.status(400).render("error", templateError);
   }
   
   const generatedString = generateRandomString();

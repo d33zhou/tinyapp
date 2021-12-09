@@ -1,3 +1,5 @@
+const { generateRandomString, getUser, urlsForUser } = require('./helpers');
+
 // EXPRESS ------------------------------------------
 
 const express = require("express");
@@ -76,7 +78,7 @@ app.get("/urls", (req, res) => {
 
   const templateVars = {
     user: users[userID],
-    urls: urlsForUser(userID)
+    urls: urlsForUser(userID, urlDatabase)
   };
 
   res.render("urls_index", templateVars);
@@ -99,7 +101,7 @@ app.get("/urls/new", (req, res) => {
 app.get("/urls/:shortURL", (req, res) => {
   const userID = req.session.user_id;
   const shortURL = req.params.shortURL;
-  const filteredURLs = Object.keys(urlsForUser(userID));
+  const filteredURLs = Object.keys(urlsForUser(userID, urlDatabase));
 
   if (!Object.keys(urlDatabase).includes(shortURL)) {
     const templateError = {
@@ -291,39 +293,3 @@ app.post("/urls", (req, res) => {
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
 });
-
-// --------------------------------------------------
-// FUNCTIONS ----------------------------------------
-// --------------------------------------------------
-
-const generateRandomString = (letters = 6) => {
-  const charPool = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890";
-  let randomized = '';
-
-  for (let i = 0; i < letters; i++) {
-    randomized += charPool.charAt(Math.floor(Math.random() * charPool.length));
-  }
-
-  return randomized;
-};
-
-const getUser = (email, users) => {
-  for (const user in users) {
-    if (users[user].email === email) {
-      return users[user];
-    }
-  }
-
-  return false;
-};
-
-const urlsForUser = id => {
-  const filtered = {};
-  let keys = Object.keys(urlDatabase).filter(url => urlDatabase[url].userID === id);
-
-  for (const key of keys) {
-    filtered[key] = urlDatabase[key];
-  }
-
-  return filtered;
-};

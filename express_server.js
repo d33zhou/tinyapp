@@ -141,6 +141,15 @@ app.get("/login", (req, res) => {
   res.render("user_login", templateVars);
 });
 
+app.get("/*", (req, res) => {
+  const templateVars = {
+    user: users[req.cookies.user_id],
+    message: "ERROR: 404 - Page Not Found"
+  };
+  
+  res.render("error", templateVars);
+});
+
 // POST METHODS -------------------------------------
 
 app.post("/login", (req, res) => {

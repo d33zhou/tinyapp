@@ -5,37 +5,32 @@ const urlDatabase = {
   "b2xVn2": {
     longURL: "http://www.lighthouselabs.ca",
     userID: "aaBB12",
-    visits: 1
+    visits: 1,
+    created: "Thu, 09 Dec 2021 22:00:00 GMT",
   },
   "9sm5xK": {
     longURL: "http://www.google.ca",
     userID: "aaBB12",
-    visits: 4
-  },
-  "e7HeP0": {
-    longURL: "http://www.outlook.com",
-    userID: "aaBB12",
-    visits: 0
-  },
-  "ySC21a": {
-    longURL: "http://www.reddit.com",
-    userID: "aaBB12",
-    visits: 4
+    visits: 3,
+    created: "Thu, 09 Dec 2021 16:00:00 GMT",
   },
   "pP0a9W": {
     longURL: "http://www.youtube.com",
     userID: "aaBB12",
-    visits: 3
+    visits: 1,
+    created: "Wed, 08 Dec 2021 15:00:00 GMT",
   },
   "nZxx6A": {
     longURL: "http://www.amazon.ca",
     userID: "CCdd34",
-    visits: 2
+    visits: 2,
+    created: "Wed, 08 Dec 2021 15:00:00 GMT",
   },
   "267Ad1": {
     longURL: "http://www.google.ca",
     userID: "CCdd34",
-    visits: 0
+    visits: 0,
+    created: "Wed, 08 Dec 2021 13:00:00 GMT",
   },
 };
 

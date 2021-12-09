@@ -112,19 +112,24 @@ app.get("/urls/:shortURL", (req, res) => {
   const templateVars = {
     user: users[userID],
     shortURL,
-    longURL: urlDatabase[shortURL].longURL
+    longURL: urlDatabase[shortURL].longURL,
+    visits: urlDatabase[shortURL].visits
   };
 
   res.render("urls_show", templateVars);
 });
 
 app.get("/u/:shortURL", (req, res) => {
-  if (!Object.keys(urlDatabase).includes(req.params.shortURL)) {
+  const shortURL = req.params.shortURL;
+  
+  if (!Object.keys(urlDatabase).includes(shortURL)) {
     res.redirect("/*");
     return;
   }
   
-  const longURL = urlDatabase[req.params.shortURL].longURL;
+  const longURL = urlDatabase[shortURL].longURL;
+  urlDatabase[shortURL].visits++;
+
   res.redirect(longURL);
 });
 
@@ -279,7 +284,8 @@ app.post("/urls", (req, res) => {
 
   urlDatabase[generatedString] = {
     longURL: req.body.longURL,
-    userID: req.session.user_id
+    userID: req.session.user_id,
+    visits: 0
   };
   res.redirect(`/urls/${generatedString}`);
 });

@@ -16,7 +16,7 @@
       </div>
     <div class="card-footer text-muted">
       <h3 class="card-title">Edit</h3>
-      <form method="POST" action=<%=`/urls/${shortURL}`%>>
+      <form method="POST" action=<%=`/urls/${shortURL}?_method=PUT`%>>
         <label for="editURL">New URL:</label>
         <input type="text" id="editURL" name="newLongURL">
         <button type="submit" class="btn btn-primary">Submit</button>

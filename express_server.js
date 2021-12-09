@@ -260,7 +260,7 @@ app.delete("/urls/:shortURL", (req, res) => {
 });
 
 // edit a shortURL
-app.post("/urls/:shortURL", (req, res) => {
+app.put("/urls/:shortURL", (req, res) => {
   if (req.session.user_id !== urlDatabase[req.params.shortURL].userID) {
     const templateError = {
       user: undefined,

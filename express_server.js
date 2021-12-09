@@ -13,6 +13,12 @@ app.use(bodyParser.urlencoded({extended: true}));
 const cookieParser = require('cookie-parser');
 app.use(cookieParser());
 
+const cookieSession = require('cookie-session');
+app.use(cookieSession({
+  name: "session",
+  keys: ['key1', 'key2']
+}));
+
 const bcrypt = require('bcryptjs');
 
 // LOCAL DATABASE -----------------------------------
@@ -66,7 +72,7 @@ app.get("/users.json", (req, res) => { //dev only, to delete
 // -----------------------------------------------
 
 app.get("/urls", (req, res) => {  
-  const userID = req.cookies.user_id;
+  const userID = req.session.user_id;
 
   const templateVars = {
     user: users[userID],
@@ -78,20 +84,20 @@ app.get("/urls", (req, res) => {
 
 app.get("/urls/new", (req, res) => {
   // if not logged in, redirect to /login
-  if (!users[req.cookies.user_id]) {
+  if (!users[req.session.user_id]) {
     res.redirect("/login");
     return;
   }
   
   const templateVars = {
-    user: users[req.cookies.user_id],
+    user: users[req.session.user_id],
   };
 
   res.render("urls_new", templateVars);
 });
 
 app.get("/urls/:shortURL", (req, res) => {
-  const userID = req.cookies.user_id;
+  const userID = req.session.user_id;
   const shortURL = req.params.shortURL;
   const filteredURLs = Object.keys(urlsForUser(userID));
 
@@ -133,13 +139,13 @@ app.get("/u/:shortURL", (req, res) => {
 
 app.get("/login", (req, res) => {
   // if logged in, redirect to /urls
-  if (users[req.cookies.user_id]) {
+  if (users[req.session.user_id]) {
     res.redirect("/urls");
     return;
   }
   
   const templateVars = {
-    user: users[req.cookies.user_id],
+    user: users[req.session.user_id],
   };
 
   res.render("user_login", templateVars);
@@ -147,13 +153,13 @@ app.get("/login", (req, res) => {
 
 app.get("/register", (req, res) => {
   // if logged in, redirect to /urls
-  if (users[req.cookies.user_id]) {
+  if (users[req.session.user_id]) {
     res.redirect("/urls");
     return;
   }
   
   const templateVars = {
-    user: users[req.cookies.user_id],
+    user: users[req.session.user_id],
   };
 
   res.render("user_register", templateVars);
@@ -161,7 +167,7 @@ app.get("/register", (req, res) => {
 
 app.get("/*", (req, res) => {
   const templateError = {
-    user: users[req.cookies.user_id],
+    user: users[req.session.user_id],
     message: "ERROR: Page Not Found"
   };
 
@@ -173,7 +179,7 @@ app.get("/*", (req, res) => {
 // --------------------------------------------------
 
 app.post("/login", (req, res) => {
-  const loginAttempt = getUser(req.body.email);
+  const loginAttempt = getUser(req.body.email, users);
   
   // redirect error if user does not exist or password does not match the hashed password
   if (!loginAttempt || !bcrypt.compareSync(req.body.password, loginAttempt.password)) {
@@ -185,12 +191,12 @@ app.post("/login", (req, res) => {
     return res.status(403).render("error", templateError);
   }  
   
-  res.cookie("user_id", loginAttempt.id);
+  req.session.user_id = loginAttempt.id;
   res.redirect("/urls");
 });
 
 app.post("/logout", (req, res) => {
-  res.clearCookie("user_id");
+  req.session = null;
   res.redirect("/urls");
 });
 
@@ -206,7 +212,7 @@ app.post("/register", (req, res) => {
   }
   
   // prevent duplicate emails
-  if (getUser(req.body.email)) {
+  if (getUser(req.body.email, users)) {
     const templateError = {
       user: undefined,
       message: "ERROR: Email Already Exists"
@@ -225,14 +231,13 @@ app.post("/register", (req, res) => {
     password: hashedPassword
   };
 
-  res.clearCookie("user_id");
-  res.cookie("user_id", generatedString);
+  req.session.user_id = generatedString;
 
   res.redirect("/urls");
 });
 
 app.post("/urls/:shortURL/delete", (req, res) => {
-  if (req.cookies.user_id !== urlDatabase[req.params.shortURL].userID) {
+  if (req.session.user_id !== urlDatabase[req.params.shortURL].userID) {
     const templateError = {
       user: undefined,
       message: "ERROR: Access Denied"
@@ -246,7 +251,7 @@ app.post("/urls/:shortURL/delete", (req, res) => {
 });
 
 app.post("/urls/:shortURL", (req, res) => {
-  if (req.cookies.user_id !== urlDatabase[req.params.shortURL].userID) {
+  if (req.session.user_id !== urlDatabase[req.params.shortURL].userID) {
     const templateError = {
       user: undefined,
       message: "ERROR: Access Denied"
@@ -261,7 +266,7 @@ app.post("/urls/:shortURL", (req, res) => {
 
 app.post("/urls", (req, res) => {
   // if not logged in, output error
-  if (!users[req.cookies.user_id]) {
+  if (!users[req.session.user_id]) {
     const templateError = {
       user: undefined,
       message: "ERROR: User Not Logged In"
@@ -274,7 +279,7 @@ app.post("/urls", (req, res) => {
 
   urlDatabase[generatedString] = {
     longURL: req.body.longURL,
-    userID: req.cookies.user_id
+    userID: req.session.user_id
   };
   res.redirect(`/urls/${generatedString}`);
 });
@@ -302,7 +307,7 @@ const generateRandomString = (letters = 6) => {
   return randomized;
 };
 
-const getUser = email => {
+const getUser = (email, users) => {
   for (const user in users) {
     if (users[user].email === email) {
       return users[user];

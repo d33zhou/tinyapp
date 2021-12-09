@@ -1,3 +1,5 @@
+// EXPRESS ------------------------------------------
+
 const express = require("express");
 const app = express();
 const PORT = 8080; // default port 8080
@@ -10,6 +12,8 @@ app.use(bodyParser.urlencoded({extended: true}));
 
 const cookieParser = require('cookie-parser');
 app.use(cookieParser());
+
+const bcrypt = require('bcryptjs');
 
 // LOCAL DATABASE -----------------------------------
 
@@ -39,7 +43,9 @@ const users = {
   },
 };
 
+// --------------------------------------------------
 // GET METHODS --------------------------------------
+// --------------------------------------------------
 
 /* app.get("/", (req, res) => { //dev only, to delete
   res.send("Hello!");
@@ -125,20 +131,6 @@ app.get("/u/:shortURL", (req, res) => {
   res.redirect(longURL);
 });
 
-app.get("/register", (req, res) => {
-  // if logged in, redirect to /urls
-  if (users[req.cookies.user_id]) {
-    res.redirect("/urls");
-    return;
-  }
-  
-  const templateVars = {
-    user: users[req.cookies.user_id],
-  };
-
-  res.render("user_register", templateVars);
-});
-
 app.get("/login", (req, res) => {
   // if logged in, redirect to /urls
   if (users[req.cookies.user_id]) {
@@ -153,6 +145,20 @@ app.get("/login", (req, res) => {
   res.render("user_login", templateVars);
 });
 
+app.get("/register", (req, res) => {
+  // if logged in, redirect to /urls
+  if (users[req.cookies.user_id]) {
+    res.redirect("/urls");
+    return;
+  }
+  
+  const templateVars = {
+    user: users[req.cookies.user_id],
+  };
+
+  res.render("user_register", templateVars);
+});
+
 app.get("/*", (req, res) => {
   const templateError = {
     user: users[req.cookies.user_id],
@@ -162,12 +168,15 @@ app.get("/*", (req, res) => {
   res.status(404).render("error", templateError);
 });
 
+// --------------------------------------------------
 // POST METHODS -------------------------------------
+// --------------------------------------------------
 
 app.post("/login", (req, res) => {
   const loginAttempt = getUser(req.body.email);
   
-  if (!loginAttempt || loginAttempt.password !== req.body.password) {
+  // redirect error if user does not exist or password does not match the hashed password
+  if (!loginAttempt || !bcrypt.compareSync(req.body.password, loginAttempt.password)) {
     const templateError = {
       user: undefined,
       message: "ERROR: Invalid Email or Password"
@@ -186,6 +195,7 @@ app.post("/logout", (req, res) => {
 });
 
 app.post("/register", (req, res) => {
+  // data validation for email & password
   if (!req.body.email || !req.body.password) {
     const templateError = {
       user: undefined,
@@ -195,6 +205,7 @@ app.post("/register", (req, res) => {
     return res.status(400).render("error", templateError);
   }
   
+  // prevent duplicate emails
   if (getUser(req.body.email)) {
     const templateError = {
       user: undefined,
@@ -204,12 +215,14 @@ app.post("/register", (req, res) => {
     return res.status(400).render("error", templateError);
   }
 
+  // create unique user and add to user database with hashed password
   const generatedString = generateRandomString();
+  const hashedPassword = bcrypt.hashSync(req.body.password, 10);
 
   users[generatedString] = {
     id: generatedString,
     email: req.body.email,
-    password: req.body.password
+    password: hashedPassword
   };
 
   res.clearCookie("user_id");
@@ -266,13 +279,17 @@ app.post("/urls", (req, res) => {
   res.redirect(`/urls/${generatedString}`);
 });
 
+// --------------------------------------------------
 // SERVER -------------------------------------------
+// --------------------------------------------------
 
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
 });
 
+// --------------------------------------------------
 // FUNCTIONS ----------------------------------------
+// --------------------------------------------------
 
 const generateRandomString = (letters = 6) => {
   const charPool = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890";

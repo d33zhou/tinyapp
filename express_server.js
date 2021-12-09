@@ -45,16 +45,23 @@ app.use(methodOverride('_method'));
 // GET METHODS --------------------------------------
 // --------------------------------------------------
 
-/* app.get("/", (req, res) => { //dev only, to delete
-  res.send("Hello!");
-}); */
+// redirect to urls or login depending on login status
+app.get("/", (req, res) => {
+  // if not logged in, redirect to /login
+  if (!users[req.session.user_id]) {
+    res.redirect("/login");
+    return;
+  }
 
-// for development - to delete
+  res.redirect("/urls");
+});
+
+// for development
 app.get("/urls.json", (req, res) => {
   res.json(urlDatabase);
 });
 
-// for development - to delete
+// for development
 app.get("/users.json", (req, res) => {
   res.json(users);
 });

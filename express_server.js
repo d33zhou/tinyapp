@@ -1,4 +1,4 @@
-const { generateRandomString, getUser, urlsForUser } = require('./helpers');
+const { generateRandomString, getUserByEmail, urlsForUser } = require('./helpers');
 
 // EXPRESS ------------------------------------------
 
@@ -181,7 +181,7 @@ app.get("/*", (req, res) => {
 // --------------------------------------------------
 
 app.post("/login", (req, res) => {
-  const loginAttempt = getUser(req.body.email, users);
+  const loginAttempt = users[getUserByEmail(req.body.email, users)];
   
   // redirect error if user does not exist or password does not match the hashed password
   if (!loginAttempt || !bcrypt.compareSync(req.body.password, loginAttempt.password)) {
@@ -214,7 +214,7 @@ app.post("/register", (req, res) => {
   }
   
   // prevent duplicate emails
-  if (getUser(req.body.email, users)) {
+  if (getUserByEmail(req.body.email, users)) {
     const templateError = {
       user: undefined,
       message: "ERROR: Email Already Exists"

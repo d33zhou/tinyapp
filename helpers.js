@@ -13,14 +13,14 @@ const generateRandomString = (letters = 6) => {
 };
 
 // return user object based on given email parameter, or false if no match
-const getUser = (email, users) => {
+const getUserByEmail = (email, users) => {
   for (const user in users) {
     if (users[user].email === email) {
-      return users[user];
+      return user;
     }
   }
 
-  return false;
+  return;
 };
 
 // return object of all urls associated with given user ID
@@ -37,6 +37,6 @@ const urlsForUser = (id, urlDatabase) => {
 
 module.exports = {
   generateRandomString,
-  getUser,
+  getUserByEmail,
   urlsForUser
 };

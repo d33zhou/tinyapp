@@ -23,6 +23,9 @@ app.use(cookieSession({
 
 const bcrypt = require('bcryptjs');
 
+const methodOverride = require('method-override');
+app.use(methodOverride('X-HTTP-Method-Override'));
+
 // LOCAL DATABASE -----------------------------------
 
 const urlDatabase = {

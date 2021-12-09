@@ -1,58 +1,45 @@
-const { generateRandomString, getUserByEmail, urlsForUser } = require('./helpers');
+// --------------------------------------------------
+// HELPER FUNCTIONS AND DATABASES -------------------
+// --------------------------------------------------
 
-// EXPRESS ------------------------------------------
+const { generateRandomString, getUserByEmail, urlsForUser } = require('./helpers');
+const { urlDatabase, users } = require('./databases');
+
+// --------------------------------------------------
+// EXPRESS & SERVER SET-UP --------------------------
+// --------------------------------------------------
 
 const express = require("express");
 const app = express();
-const PORT = 8080; // default port 8080
+const PORT = 8080; // using 8080 as default
 
 app.set('view engine', 'ejs');
 
-// MIDDLEWARE ---------------------------------------
+app.listen(PORT, () => {
+  console.log(`TinyApp listening on port ${PORT}!`);
+});
+
+// --------------------------------------------------
+// MIDDLEWARE SET-UP --------------------------------
+// --------------------------------------------------
+
+// read HTTP body
 const bodyParser = require("body-parser");
 app.use(bodyParser.urlencoded({extended: true}));
 
-const cookieParser = require('cookie-parser');
-app.use(cookieParser());
-
+// encrypt cookies
 const cookieSession = require('cookie-session');
 app.use(cookieSession({
   name: "session",
   keys: ['key1', 'key2']
 }));
 
+// to hash passwords
 const bcrypt = require('bcryptjs');
 
+// override form POST to PUT/DELETE
 const methodOverride = require('method-override');
 app.use(methodOverride('_method'));
-
-// LOCAL DATABASE -----------------------------------
-
-const urlDatabase = {
-  "b2xVn2": {
-    longURL: "http://www.lighthouselabs.ca",
-    userID: "aaBB12"
-  },
-  "9sm5xK": {
-    longURL: "http://www.google.ca",
-    userID: "aaBB12"
-  },
-};
-
-//curl -X POST -i localhost:8080/urls/9sm5xK/delete
-
-const users = {
-  aaBB12: {
-    id: "aaBB12",
-    email: "user@example.com",
-    password: "test1"
-  },
-  CCdd34: {
-    id: "CCdd34",
-    email: "test@example.com",
-    password: "test2"
-  },
-};
 
 // --------------------------------------------------
 // GET METHODS --------------------------------------
@@ -62,20 +49,17 @@ const users = {
   res.send("Hello!");
 }); */
 
-app.get("/urls.json", (req, res) => { //dev only, to delete
+// for development - to delete
+app.get("/urls.json", (req, res) => {
   res.json(urlDatabase);
 });
 
-app.get("/users.json", (req, res) => { //dev only, to delete
+// for development - to delete
+app.get("/users.json", (req, res) => {
   res.json(users);
 });
 
-/* app.get("/hello", (req, res) => { //dev only, to delete
-  res.send("<html><body>Hello <b>World</b></body></html>\n");
-}); */
-
-// -----------------------------------------------
-
+// main page - URLs index
 app.get("/urls", (req, res) => {  
   const userID = req.session.user_id;
 
@@ -87,6 +71,7 @@ app.get("/urls", (req, res) => {
   res.render("urls_index", templateVars);
 });
 
+// create new URL page
 app.get("/urls/new", (req, res) => {
   // if not logged in, redirect to /login
   if (!users[req.session.user_id]) {
@@ -101,6 +86,7 @@ app.get("/urls/new", (req, res) => {
   res.render("urls_new", templateVars);
 });
 
+// view specific URL page
 app.get("/urls/:shortURL", (req, res) => {
   const userID = req.session.user_id;
   const shortURL = req.params.shortURL;
@@ -142,6 +128,7 @@ app.get("/u/:shortURL", (req, res) => {
   res.redirect(longURL);
 });
 
+// login page
 app.get("/login", (req, res) => {
   // if logged in, redirect to /urls
   if (users[req.session.user_id]) {
@@ -156,6 +143,7 @@ app.get("/login", (req, res) => {
   res.render("user_login", templateVars);
 });
 
+// register page
 app.get("/register", (req, res) => {
   // if logged in, redirect to /urls
   if (users[req.session.user_id]) {
@@ -170,6 +158,7 @@ app.get("/register", (req, res) => {
   res.render("user_register", templateVars);
 });
 
+// 404 page
 app.get("/*", (req, res) => {
   const templateError = {
     user: users[req.session.user_id],
@@ -244,21 +233,6 @@ app.post("/register", (req, res) => {
   res.redirect("/urls");
 });
 
-// delete a shortURL
-app.delete("/urls/:shortURL", (req, res) => {
-  if (req.session.user_id !== urlDatabase[req.params.shortURL].userID) {
-    const templateError = {
-      user: undefined,
-      message: "ERROR: Access Denied"
-    };
-
-    return res.status(403).render("error", templateError);
-  }
-  
-  delete urlDatabase[req.params.shortURL];
-  res.redirect("/urls");
-});
-
 // edit a shortURL
 app.put("/urls/:shortURL", (req, res) => {
   if (req.session.user_id !== urlDatabase[req.params.shortURL].userID) {
@@ -272,6 +246,21 @@ app.put("/urls/:shortURL", (req, res) => {
   
   urlDatabase[req.params.shortURL].longURL = req.body.newLongURL;
   res.redirect(`/urls/${req.params.shortURL}`);
+});
+
+// delete a shortURL
+app.delete("/urls/:shortURL", (req, res) => {
+  if (req.session.user_id !== urlDatabase[req.params.shortURL].userID) {
+    const templateError = {
+      user: undefined,
+      message: "ERROR: Access Denied"
+    };
+
+    return res.status(403).render("error", templateError);
+  }
+  
+  delete urlDatabase[req.params.shortURL];
+  res.redirect("/urls");
 });
 
 // create new shortURL
@@ -293,12 +282,4 @@ app.post("/urls", (req, res) => {
     userID: req.session.user_id
   };
   res.redirect(`/urls/${generatedString}`);
-});
-
-// --------------------------------------------------
-// SERVER -------------------------------------------
-// --------------------------------------------------
-
-app.listen(PORT, () => {
-  console.log(`Example app listening on port ${PORT}!`);
 });

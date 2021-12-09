@@ -24,7 +24,7 @@ app.use(cookieSession({
 const bcrypt = require('bcryptjs');
 
 const methodOverride = require('method-override');
-app.use(methodOverride('X-HTTP-Method-Override'));
+app.use(methodOverride('_method'));
 
 // LOCAL DATABASE -----------------------------------
 
@@ -183,6 +183,7 @@ app.get("/*", (req, res) => {
 // POST METHODS -------------------------------------
 // --------------------------------------------------
 
+// login and authentication
 app.post("/login", (req, res) => {
   const loginAttempt = users[getUserByEmail(req.body.email, users)];
   
@@ -200,11 +201,13 @@ app.post("/login", (req, res) => {
   res.redirect("/urls");
 });
 
+// logout
 app.post("/logout", (req, res) => {
   req.session = null;
   res.redirect("/urls");
 });
 
+// create a new user
 app.post("/register", (req, res) => {
   // data validation for email & password
   if (!req.body.email || !req.body.password) {
@@ -241,7 +244,8 @@ app.post("/register", (req, res) => {
   res.redirect("/urls");
 });
 
-app.post("/urls/:shortURL/delete", (req, res) => {
+// delete a shortURL
+app.delete("/urls/:shortURL", (req, res) => {
   if (req.session.user_id !== urlDatabase[req.params.shortURL].userID) {
     const templateError = {
       user: undefined,
@@ -255,6 +259,7 @@ app.post("/urls/:shortURL/delete", (req, res) => {
   res.redirect("/urls");
 });
 
+// edit a shortURL
 app.post("/urls/:shortURL", (req, res) => {
   if (req.session.user_id !== urlDatabase[req.params.shortURL].userID) {
     const templateError = {
@@ -269,6 +274,7 @@ app.post("/urls/:shortURL", (req, res) => {
   res.redirect(`/urls/${req.params.shortURL}`);
 });
 
+// create new shortURL
 app.post("/urls", (req, res) => {
   // if not logged in, output error
   if (!users[req.session.user_id]) {

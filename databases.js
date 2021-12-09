@@ -6,31 +6,31 @@ const urlDatabase = {
     longURL: "http://www.lighthouselabs.ca",
     userID: "aaBB12",
     visits: 1,
-    created: "Thu, 09 Dec 2021 22:00:00 GMT",
+    created: new Date(1639089769977),
   },
   "9sm5xK": {
     longURL: "http://www.google.ca",
     userID: "aaBB12",
     visits: 3,
-    created: "Thu, 09 Dec 2021 16:00:00 GMT",
+    created: new Date(1639089769977),
   },
   "pP0a9W": {
     longURL: "http://www.youtube.com",
     userID: "aaBB12",
     visits: 1,
-    created: "Wed, 08 Dec 2021 15:00:00 GMT",
+    created: new Date(1639000000000),
   },
   "nZxx6A": {
     longURL: "http://www.amazon.ca",
     userID: "CCdd34",
     visits: 2,
-    created: "Wed, 08 Dec 2021 15:00:00 GMT",
+    created: new Date(1639089769977),
   },
   "267Ad1": {
     longURL: "http://www.google.ca",
     userID: "CCdd34",
     visits: 0,
-    created: "Wed, 08 Dec 2021 13:00:00 GMT",
+    created: new Date(1639000000000),
   },
 };
 

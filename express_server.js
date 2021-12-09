@@ -121,7 +121,7 @@ app.get("/urls/:shortURL", (req, res) => {
     shortURL,
     longURL: urlDatabase[shortURL].longURL,
     visits: urlDatabase[shortURL].visits,
-    created: urlDatabase[shortURL].created,
+    created: urlDatabase[shortURL].created.toUTCString(),
   };
 
   res.render("urls_show", templateVars);
@@ -289,13 +289,12 @@ app.post("/urls", (req, res) => {
   }
   
   const generatedString = generateRandomString();
-  const date = new Date();
 
   urlDatabase[generatedString] = {
     longURL: req.body.longURL,
     userID: req.session.user_id,
     visits: 0,
-    created: date.toUTCString()
+    created: new Date()
   };
   res.redirect(`/urls/${generatedString}`);
 });

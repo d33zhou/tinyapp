@@ -2,7 +2,7 @@
 // HELPER FUNCTIONS AND DATABASES -------------------
 // --------------------------------------------------
 
-const { generateRandomString, getUserByEmail, urlsForUser, findUniqueVisits } = require('./helpers');
+const { generateRandomString, getUserByEmail, urlsForUser } = require('./helpers');
 const { urlDatabase, users } = require('./databases');
 
 // --------------------------------------------------
@@ -74,11 +74,6 @@ app.get("/urls", (req, res) => {
     user: users[userID],
     urls: urlsForUser(userID, urlDatabase)
   };
-  
-  // append # unique property to object before rendering index page
-  for (const url in templateVars.urls) {
-    templateVars.urls[url].unique = findUniqueVisits(url, templateVars.urls);
-  }
 
   res.render("urls_index", templateVars);
 });
@@ -120,16 +115,14 @@ app.get("/urls/:shortURL", (req, res) => {
 
     return res.status(400).render("error", templateError);
   }
-  
-  const unique = findUniqueVisits(shortURL, urlDatabase);
 
   const templateVars = {
     shortURL,
-    unique,
     user: users[userID],
     longURL: urlDatabase[shortURL].longURL,
     created: urlDatabase[shortURL].created.toUTCString(),
     visitLog: urlDatabase[shortURL].visitLog,
+    unique: urlDatabase[shortURL].unique,
   };
 
   res.render("urls_show", templateVars);
@@ -144,17 +137,18 @@ app.get("/u/:shortURL", (req, res) => {
     return;
   }
   
-  // add the visit to the visit log, use visitor_id if assigned else new random visitor_id
-  urlDatabase[shortURL].visitLog.push({
-    id: req.session.visitor_id ? req.session.visitor_id : generateRandomString(),
-    time: new Date(),
-  });
-
+  let id = req.session.visitor_id ? req.session.visitor_id : generateRandomString();
   // check if the visitor_id is already present in the visit log
   const alreadyVisited = urlDatabase[shortURL].visitLog
     .map(visit => visit.id)
-    .includes(req.session.visitor_id);
+    .includes(id);
   !alreadyVisited ? urlDatabase[shortURL].unique++ : "";
+
+  // add the visit to the visit log, use visitor_id if assigned else new random visitor_id
+  urlDatabase[shortURL].visitLog.push({
+    id,
+    time: new Date(),
+  });
 
   // redirect to the longURL
   const longURL = urlDatabase[shortURL].longURL;

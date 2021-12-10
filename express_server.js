@@ -74,6 +74,11 @@ app.get("/urls", (req, res) => {
     user: users[userID],
     urls: urlsForUser(userID, urlDatabase)
   };
+  
+  // append # unique property to object before rendering index page
+  for (const url in templateVars.urls) {
+    templateVars.urls[url].unique = findUniqueVisits(url, templateVars.urls);
+  }
 
   res.render("urls_index", templateVars);
 });
@@ -133,18 +138,26 @@ app.get("/urls/:shortURL", (req, res) => {
 app.get("/u/:shortURL", (req, res) => {
   const shortURL = req.params.shortURL;
   
+  // redirect if shortURL doesn't exist
   if (!Object.keys(urlDatabase).includes(shortURL)) {
     res.redirect("/*");
     return;
   }
   
+  // add the visit to the visit log, use visitor_id if assigned else new random visitor_id
   urlDatabase[shortURL].visitLog.push({
     id: req.session.visitor_id ? req.session.visitor_id : generateRandomString(),
     time: new Date(),
   });
 
-  const longURL = urlDatabase[shortURL].longURL;
+  // check if the visitor_id is already present in the visit log
+  const alreadyVisited = urlDatabase[shortURL].visitLog
+    .map(visit => visit.id)
+    .includes(req.session.visitor_id);
+  !alreadyVisited ? urlDatabase[shortURL].unique++ : "";
 
+  // redirect to the longURL
+  const longURL = urlDatabase[shortURL].longURL;
   res.redirect(longURL);
 });
 
@@ -304,7 +317,8 @@ app.post("/urls", (req, res) => {
     longURL: req.body.longURL,
     userID: req.session.user_id,
     created: new Date(),
-    visitLog: []
+    visitLog: [],
+    unique: 0
   };
   res.redirect(`/urls/${generatedString}`);
 });

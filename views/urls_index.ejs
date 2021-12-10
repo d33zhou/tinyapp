@@ -36,7 +36,7 @@
               <td><%= urls[url].longURL %></td>
               <td class="text-center"><%= urls[url].created.toLocaleString().split(',')[0] %></td>
               <td class="text-center"><%= urls[url].visitLog.length %></td>
-              <td class="text-center">(placeholder)</td>
+              <td class="text-center"><%= urls[url].unique %></td>
               <td>
                 <form method="GET" action=<%=`/urls/${url}`%>>
                   <button type="submit" class="btn btn-outline-primary">Edit</button>

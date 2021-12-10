@@ -9,6 +9,7 @@ const urlDatabase = {
     visitLog: [
       {id: "16Stv8", time: new Date(1639089969977)}
     ],
+    unique: 1,
   },
   "9sm5xK": {
     longURL: "http://www.google.ca",
@@ -19,6 +20,7 @@ const urlDatabase = {
       {id: "16Stv8", time: new Date(1639089999977)},
       {id: "yYts72", time: new Date(1639090000000)}
     ],
+    unique: 2,
   },
   "pP0a9W": {
     longURL: "http://www.youtube.com",
@@ -27,6 +29,7 @@ const urlDatabase = {
     visitLog: [
       {id: "16Stv8", time: new Date(1639000400000)}
     ],
+    unique: 1,
   },
   "nZxx6A": {
     longURL: "http://www.amazon.ca",
@@ -36,12 +39,14 @@ const urlDatabase = {
       {id: "16Stv8", time: new Date(1639089969977)},
       {id: "yYts72", time: new Date(1639090003300)}
     ],
+    unique: 2,
   },
   "267Ad1": {
     longURL: "http://www.google.ca",
     userID: "CCdd34",
     created: new Date(1639000000000),
     visitLog: [],
+    unique: 0,
   },
 };
 

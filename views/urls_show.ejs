@@ -24,10 +24,22 @@
           <button type="submit" class="btn btn-primary">Submit</button>
         </form>
       </div>
-      <div class="card-footer text-muted">
+      <div class="card-body"></div>
+      <div class="card-footer text-muted text-left">
         <h3 class="card-title">Stats</h3>
         <p class="card-text">Created on: <%= created %></p>
-        <p class="card-text">Total Visits: <%= visits %></p>
+        <p class="card-text">Total Visits: <%= visitLog.length %></p>
+        <p class="card-text">Unique Visitors: <%= unique %></p>
+      </div>
+      <div class="card-footer text-muted text-left">
+        <h3 class="card-title">Visitors</h3>
+        <% if (visitLog.length > 0) { %>
+          <% for (const visit of visitLog) { %>
+            <p class="card-text">Visited by <%= visit.id %> on <%= visit.time %></p>
+            <% } %>
+        <% } else { %>
+          <p class="card-text">No one has visited your link yet!</p>
+        <% } %>
       </div>
     </div>
 

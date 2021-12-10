@@ -1,5 +1,7 @@
 // Helper functions for express_server
 
+const { urlDatabase } = require("./databases");
+
 // generate random 6-letter ids (user id and shortURL id)
 const generateRandomString = (letters = 6) => {
   const charPool = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890";
@@ -35,8 +37,20 @@ const urlsForUser = (id, urlDatabase) => {
   return filtered;
 };
 
+// return unique number of visitors for a shortURL
+const findUniqueVisits = (shortURL, urlDatabase) => {
+  const idOccurrences = {};
+
+  for (const visit of urlDatabase[shortURL].visitLog) {
+    idOccurrences[visit.id] ? idOccurrences[visit.id]++ : idOccurrences[visit.id] = 1;
+  }
+
+  return Object.keys(idOccurrences).length;
+};
+
 module.exports = {
   generateRandomString,
   getUserByEmail,
-  urlsForUser
+  urlsForUser,
+  findUniqueVisits
 };

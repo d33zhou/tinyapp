@@ -2,7 +2,7 @@
 // HELPER FUNCTIONS AND DATABASES -------------------
 // --------------------------------------------------
 
-const { generateRandomString, getUserByEmail, urlsForUser } = require('./helpers');
+const { generateRandomString, getUserByEmail, urlsForUser, findUniqueVisits } = require('./helpers');
 const { urlDatabase, users } = require('./databases');
 
 // --------------------------------------------------
@@ -116,12 +116,15 @@ app.get("/urls/:shortURL", (req, res) => {
     return res.status(400).render("error", templateError);
   }
   
+  const unique = findUniqueVisits(shortURL, urlDatabase);
+
   const templateVars = {
-    user: users[userID],
     shortURL,
+    unique,
+    user: users[userID],
     longURL: urlDatabase[shortURL].longURL,
-    visits: urlDatabase[shortURL].visits,
     created: urlDatabase[shortURL].created.toUTCString(),
+    visitLog: urlDatabase[shortURL].visitLog,
   };
 
   res.render("urls_show", templateVars);
@@ -135,8 +138,12 @@ app.get("/u/:shortURL", (req, res) => {
     return;
   }
   
+  urlDatabase[shortURL].visitLog.push({
+    id: req.session.visitor_id ? req.session.visitor_id : generateRandomString(),
+    time: new Date(),
+  });
+
   const longURL = urlDatabase[shortURL].longURL;
-  urlDatabase[shortURL].visits++;
 
   res.redirect(longURL);
 });
@@ -200,6 +207,8 @@ app.post("/login", (req, res) => {
   }  
   
   req.session.user_id = loginAttempt.id;
+  req.session.visitor_id = generateRandomString();
+
   res.redirect("/urls");
 });
 
@@ -238,10 +247,11 @@ app.post("/register", (req, res) => {
   users[generatedString] = {
     id: generatedString,
     email: req.body.email,
-    password: hashedPassword
+    password: hashedPassword,
   };
 
   req.session.user_id = generatedString;
+  req.session.visitor_id = generateRandomString();
 
   res.redirect("/urls");
 });
@@ -258,7 +268,7 @@ app.put("/urls/:shortURL", (req, res) => {
   }
   
   urlDatabase[req.params.shortURL].longURL = req.body.newLongURL;
-  res.redirect(`/urls/${req.params.shortURL}`);
+  res.redirect("/urls");
 });
 
 // delete a shortURL
@@ -293,8 +303,8 @@ app.post("/urls", (req, res) => {
   urlDatabase[generatedString] = {
     longURL: req.body.longURL,
     userID: req.session.user_id,
-    visits: 0,
-    created: new Date()
+    created: new Date(),
+    visitLog: []
   };
   res.redirect(`/urls/${generatedString}`);
 });

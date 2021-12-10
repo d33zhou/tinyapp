@@ -35,7 +35,7 @@
               <td><%= url %></td>
               <td><%= urls[url].longURL %></td>
               <td class="text-center"><%= urls[url].created.toLocaleString().split(',')[0] %></td>
-              <td class="text-center"><%= urls[url].visits %></td>
+              <td class="text-center"><%= urls[url].visitLog.length %></td>
               <td class="text-center">(placeholder)</td>
               <td>
                 <form method="GET" action=<%=`/urls/${url}`%>>
@@ -47,11 +47,15 @@
                   <button type="submit" class="btn btn-outline-danger">Delete</button>
                 </form>
               </td>
+              <% } %>
             </tr>
-            <% } %>
+            
           </tbody>
-          <% } %>
-    </table>
+        </table>
+        <form method="GET" action="/urls/new">
+          <button type="submit" class="btn btn-success btn-md btn-block">(+) Create a New Short Link</button>
+        </form>
+        <% } %>
   </main>
   <!-- Bootstrap JS -->
   <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>

@@ -1,7 +1,5 @@
 // Helper functions for express_server
 
-const { urlDatabase } = require("./databases");
-
 // generate random 6-letter ids (user id and shortURL id)
 const generateRandomString = (letters = 6) => {
   const charPool = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890";

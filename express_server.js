@@ -67,7 +67,7 @@ app.get("/users.json", (req, res) => {
 });
 
 // main page - URLs index
-app.get("/urls", (req, res) => {  
+app.get("/urls", (req, res) => {
   const userID = req.session.user_id;
 
   const templateVars = {
@@ -215,7 +215,7 @@ app.post("/login", (req, res) => {
     };
 
     return res.status(403).render("error", templateError);
-  }  
+  }
   
   // assign cookie credentials
   req.session.user_id = loginAttempt.id;

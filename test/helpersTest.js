@@ -1,5 +1,5 @@
 const { assert } = require('chai');
-const { getUserByEmail, generateRandomString } = require('../helpers.js');
+const { getUserByEmail, generateRandomString } = require('../server_support/helpers.js');
 
 const testUsers = {
   "userRandomID": {

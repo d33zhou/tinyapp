@@ -2,8 +2,8 @@
 // HELPER FUNCTIONS AND DATABASES -------------------
 // --------------------------------------------------
 
-const { generateRandomString, getUserByEmail, urlsForUser } = require('./helpers');
-const { urlDatabase, users } = require('./databases');
+const { generateRandomString, getUserByEmail, urlsForUser } = require('./server_support/helpers');
+const { urlDatabase, users } = require('./server_support/databases');
 
 // --------------------------------------------------
 // EXPRESS & SERVER SET-UP --------------------------

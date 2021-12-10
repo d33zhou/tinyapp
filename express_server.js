@@ -99,6 +99,7 @@ app.get("/urls/:shortURL", (req, res) => {
   const shortURL = req.params.shortURL;
   const filteredURLs = Object.keys(urlsForUser(userID, urlDatabase));
 
+  // check if shortURL is valid
   if (!Object.keys(urlDatabase).includes(shortURL)) {
     const templateError = {
       user: undefined,
@@ -107,6 +108,7 @@ app.get("/urls/:shortURL", (req, res) => {
 
     return res.status(404).render("error", templateError);
 
+    // check if user has access rights to view the page
   } else if (!filteredURLs.includes(shortURL)) {
     const templateError = {
       user: undefined,
@@ -128,15 +130,17 @@ app.get("/urls/:shortURL", (req, res) => {
   res.render("urls_show", templateVars);
 });
 
+// redirect to the long URL
 app.get("/u/:shortURL", (req, res) => {
   const shortURL = req.params.shortURL;
   
-  // redirect if shortURL doesn't exist
+  // redirect 404 if shortURL doesn't exist
   if (!Object.keys(urlDatabase).includes(shortURL)) {
     res.redirect("/*");
     return;
   }
   
+  // generate random ID for anonymous users
   let id = req.session.visitor_id ? req.session.visitor_id : generateRandomString();
   // check if the visitor_id is already present in the visit log
   const alreadyVisited = urlDatabase[shortURL].visitLog
@@ -144,7 +148,7 @@ app.get("/u/:shortURL", (req, res) => {
     .includes(id);
   !alreadyVisited ? urlDatabase[shortURL].unique++ : "";
 
-  // add the visit to the visit log, use visitor_id if assigned else new random visitor_id
+  // add the visit to the visit log
   urlDatabase[shortURL].visitLog.push({
     id,
     time: new Date(),
@@ -213,6 +217,7 @@ app.post("/login", (req, res) => {
     return res.status(403).render("error", templateError);
   }  
   
+  // assign cookie credentials
   req.session.user_id = loginAttempt.id;
   req.session.visitor_id = generateRandomString();
 
@@ -237,7 +242,7 @@ app.post("/register", (req, res) => {
     return res.status(400).render("error", templateError);
   }
   
-  // prevent duplicate emails
+  // prevent duplicate emails in database
   if (getUserByEmail(req.body.email, users)) {
     const templateError = {
       user: undefined,
@@ -257,6 +262,7 @@ app.post("/register", (req, res) => {
     password: hashedPassword,
   };
 
+  // assign cookie credentials
   req.session.user_id = generatedString;
   req.session.visitor_id = generateRandomString();
 
@@ -265,6 +271,7 @@ app.post("/register", (req, res) => {
 
 // edit a shortURL
 app.put("/urls/:shortURL", (req, res) => {
+  // check if user has access rights to edit the shortURL
   if (req.session.user_id !== urlDatabase[req.params.shortURL].userID) {
     const templateError = {
       user: undefined,
@@ -280,6 +287,7 @@ app.put("/urls/:shortURL", (req, res) => {
 
 // delete a shortURL
 app.delete("/urls/:shortURL", (req, res) => {
+  // check if user has access rights to delete the shortURL
   if (req.session.user_id !== urlDatabase[req.params.shortURL].userID) {
     const templateError = {
       user: undefined,
@@ -305,6 +313,7 @@ app.post("/urls", (req, res) => {
     return res.status(400).render("error", templateError);
   }
   
+  // create new short URL data and add to database
   const generatedString = generateRandomString();
 
   urlDatabase[generatedString] = {
